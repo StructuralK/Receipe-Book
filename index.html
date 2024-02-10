@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe List</title>
+    <style>
+        body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+
+        .container {
+            position: relative;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        #recipeTable {
+            margin-top: 20px;
+        }
+
+        table {
+            margin-top: 45px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .button-container {
+            position: absolute;
+            top: 10px; 
+            right: 10px;
+        }
+
+        a.button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        a.button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Recipe List</h1>
+    </header>
+    <div class="container">
+        <div class="button-container">
+            <a href="addRecipe.html" target="_blank" class="button">Add New Recipe</a>
+        </div>
+        <div id="recipeTable"></div>
+    </div>
+    <script>
+         const recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+
+if (recipes.length > 0) {
+    
+    const table = document.createElement("table");
+    table.classList.add("recipe-table"); 
+
+    const headers = ["Recipe Name", "Ingredients", "Instructions", "Actions"];
+    const headerRow = table.insertRow();
+    headers.forEach(headerText => {
+        const th = document.createElement("th");
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+
+    
+    recipes.forEach((recipe, rowIndex) => {
+        const row = table.insertRow();
+        
+        
+        Object.values(recipe).forEach(value => {
+            const cell = row.insertCell();
+            cell.textContent = value;
+        });
+
+        
+        const actionCell = row.insertCell();
+        const editButton = document.createElement("button"); 
+        editButton.type = "button";
+        editButton.textContent = "Edit";
+        editButton.style.backgroundColor = "#3498db";
+        editButton.style.color = "#fff"; 
+        editButton.addEventListener("click", () => {
+            window.open(`editRecipe.html?index=${rowIndex}`, '_blank');
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.style.marginLeft = "10px";
+        deleteButton.style.backgroundColor = "#ff6347"; 
+        deleteButton.addEventListener("click", () => {
+            deleteRecipe(rowIndex);
+        });
+
+        actionCell.appendChild(editButton) ;
+        actionCell.appendChild(deleteButton);
+    });
+
+    
+    document.getElementById("recipeTable").appendChild(table);
+} else {
+    
+    document.getElementById("recipeTable").innerHTML = "<p>No recipes available.</p>";
+}
+
+
+function deleteRecipe(index) {
+    const confirmDelete = confirm("Are you sure you want to delete this recipe?");
+    if (confirmDelete) {
+        recipes.splice(index, 1);
+        localStorage.setItem("recipes", JSON.stringify(recipes));
+        location.reload();
+    }
+}
+    </script>
+</body>
+</html>
